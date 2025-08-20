@@ -5,13 +5,43 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native"
+import { api } from "@/server/api";
+import { isAxiosError } from "axios";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
-  async function handleSignIn() {}
+  async function handleSignIn() {
+    try {
+      const response = await api.post("/login", {
+        email,
+        password,
+      })
+
+      Alert.alert(
+        "Login",
+        `Olá ${response.data.name}`,
+        [{ text: "Ok" }],
+      );
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return Alert.alert(
+          "Login",
+          error.response?.data,
+          [{ text: "Ok" }],
+        );
+      }
+
+      Alert.alert(
+        "Login",
+        "Não foi possível entrar. Tente novamente mais tarde.",
+        [{ text: "Ok" }],
+      );
+    }
+  }
 
   return (
     <View style={styles.container}>
